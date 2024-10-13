@@ -10,16 +10,20 @@ void* start_scheduling(void *ptr)
 {
     SchedulerInfo *si = (SchedulerInfo *)ptr;
 
+    int num_processes = 0;
+    std::string s;
+    for (std::ifstream i(si->filename); std::getline(i, s); num_processes++);
+
+    Process *processes = new Process[num_processes];
+    
     std::ifstream burst_file(si->filename);
     float alpha = si->alpha;
-
-    std::vector<Process> processes;
     ProcessQueue ready_q, io_q;
 
     std::string line;
     for (int pid = 0; std::getline(burst_file, line); pid++)
     {
-        processes.emplace_back(pid, line);
+        processes[pid] = Process(pid, line);
         ready_q.push(&processes[pid]);
     }
 
@@ -28,6 +32,8 @@ void* start_scheduling(void *ptr)
     do
     {
     } while(false);
+
+    delete[] processes;
     
     si->running = false;
     pthread_exit(0);

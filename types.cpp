@@ -19,7 +19,7 @@ void ProcessQueue::push(Process *proc)
 
 std::string ProcessQueue::to_string()
 {
-    std::queue copy = q;
+    std::queue<Process*> copy = q;
     std::stringstream ss;
 
     for (Process *p; !copy.empty();)

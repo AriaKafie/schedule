@@ -9,16 +9,17 @@
 constexpr float NO_ALPHA         = -1;
 constexpr int   SECOND_ARG_INDEX =  1;
 
-struct SchedulerInfo {
+typedef struct {
     char *filename;
     float alpha;
     bool running;
-};
+} SchedulerInfo;
 
 class Process
 {
 public:
-    Process(int pid, const std::string& bursts);
+    Process() = default;
+    Process(int pid, const std::string& bursts_s);
     
     int id;
     int cpu_time;

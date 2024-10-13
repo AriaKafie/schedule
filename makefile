@@ -1,6 +1,6 @@
 all:
-	g++ -fpermissive -std=c++17 *.cpp -oschedule
+	g++ -w -fpermissive -std=c++17 *.cpp -oschedule
 clean:
 	rm *~ schedule
 run:
-	g++ -fpermissive -std=c++17 *.cpp -oschedule && ./schedule
+	g++ -w -fpermissive -std=c++17 *.cpp -oschedule && ./schedule

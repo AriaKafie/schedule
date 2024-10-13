@@ -1,0 +1,16 @@
+P0: 4 7 6 
+P1: 3 8 3 1 6 
+P2: 5 2 3 
+P1: cpu executed = 3, io executed = 0, time elapsed = 3, enter io
+P2: cpu executed = 5, io executed = 0, time elapsed = 8, enter io
+P0: cpu executed = 4, io executed = 0, time elapsed = 12, enter io
+P1: cpu executed = 6, io executed = 8, time elapsed = 15, enter io
+P2: cpu executed = 8, io executed = 2, time elapsed = 18, completed
+P1: cpu executed = 12, io executed = 9, time elapsed = 24, completed
+P0: cpu executed = 10, io executed = 7, time elapsed = 30, completed
+P2: turnaround time = 18, wait time = 8
+P1: turnaround time = 24, wait time = 3
+P0: turnaround time = 30, wait time = 13
+P2: 4.00 2.00 4.50 
+P1: 4.00 8.00 3.50 1.00 3.25 
+P0: 5.00 7.00 4.50 

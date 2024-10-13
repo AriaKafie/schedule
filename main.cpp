@@ -1,4 +1,5 @@
 
+#include <fstream>
 #include <iostream>
 #include <pthread.h>
 #include <unistd.h>
@@ -10,11 +11,23 @@ void* start_scheduling(void *ptr)
     SchedulerInfo *si = (SchedulerInfo *)ptr;
 
     std::ifstream burst_file(si->filename);
-    double alpha = si->alpha;
+    float alpha = si->alpha;
+
+    std::vector<Process> processes;
+    ProcessQueue ready_q, io_q;
+
+    std::string line;
+    for (int pid = 0; std::getline(burst_file, line); pid++)
+    {
+        processes.emplace_back(pid, line);
+        ready_q.push(&processes[pid]);
+    }
+
+    std::cout << ready_q.to_string();
     
     do
     {
-    } while(ready_q not empty || io_q not empty);
+    } while(false);
     
     si->running = false;
     pthread_exit(0);
@@ -22,7 +35,7 @@ void* start_scheduling(void *ptr)
 
 int main(int argc, char** argv)
 {
-    double alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_ALPHA;
+    float alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_ALPHA;
     char *path = optind < argc ? argv[optind] : argv[SECOND_ARG_INDEX];
 
     pthread_t worker;

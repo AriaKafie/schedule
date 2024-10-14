@@ -5,6 +5,7 @@
 
 void Process::run_cpu()
 {
+    cpu_time += bursts[0];
     bursts.erase(bursts.begin());
 }
 
@@ -36,11 +37,6 @@ float Process::estimate(float alpha)
     }
 }
 
-void ProcessQueue::push(Process *proc)
-{
-    q.push(proc);
-}
-
 void ProcessQueue::run_io(int ms)
 {
     std::vector<Process*> processes;
@@ -53,7 +49,10 @@ void ProcessQueue::run_io(int ms)
     }
 
     for (Process *p : processes)
+    {
+        p->io_time += std::max(p->next_burst(), ms);
         p->bursts[0] -= ms;
+    }
 }
 
 void ProcessQueue::sort_io()
@@ -71,7 +70,7 @@ void ProcessQueue::sort_io()
     {
         for (int j = 0; j < processes.size() - 1; j++)
         {
-            if (processes[j]->next_burst > processes[j+1]->next_burst)
+            if (processes[j]->next_burst() > processes[j+1]->next_burst())
             {
                 Process *temp = processes[j];
                 processes[j] = processes[j+1];

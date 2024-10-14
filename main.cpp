@@ -18,6 +18,8 @@ void* start_scheduling(void *ptr)
 
     ready_q.sort();
 
+    std::cout << ready_q.to_string() << io_q.to_string() << std::endl;
+    
     do
     {
         if (!ready_q.empty())
@@ -28,9 +30,29 @@ void* start_scheduling(void *ptr)
             cpu_front->run_cpu();
 
             io_q.run_io(time_spent);
+
+            while (!io_q.empty())
+            {
+                Process *front = io_q.front();
+                if (front->next_burst() <= 0)
+                {
+                    front->bursts.erase(front->bursts.begin());
+                    ready_q.push(front);
+                    io_q.pop();
+                }
+                else break;
+            }
+
+            if (!cpu_front->done())
+            {
+                ready_q.pop();
+                io_q.push(cpu_front);
+            }
         }
         
     } while(false);
+
+    std::cout << ready_q.to_string() << io_q.to_string() << std::endl;
 
     si->running = false;
     pthread_exit(0);

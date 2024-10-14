@@ -41,12 +41,14 @@ public:
     Process* front() const { return q.front(); }
     bool empty() const { return q.size() == 0; }
     int size() const { return q.size(); }
-    void push(Process *proc);
-    //Process* pop();
+    void push(Process *proc) { q.push(proc); }
+    void pop() { q.pop(); }
     void sort();
+    void run_io(int ms);
     void sort_io();
 
     float alpha;
+    
     std::string to_string();
     std::queue<Process*> q;
 };

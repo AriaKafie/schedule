@@ -34,12 +34,14 @@ public:
 class ProcessQueue
 {
 public:
+    ProcessQueue(float _alpha) : alpha(_alpha) {}
+    
     void     push(Process *proc);
     //Process* pop();
     void     sort();
 
+    float alpha;
     std::string to_string();
-    
     std::queue<Process*> q;
 };
 

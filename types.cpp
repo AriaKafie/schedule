@@ -25,7 +25,30 @@ void ProcessQueue::push(Process *proc)
 
 void ProcessQueue::sort()
 {
-    
+    std::vector<Process*> processes;
+
+    for (Process *p; !q.empty();)
+    {
+        p = q.front();
+        processes.push_back(p);
+        q.pop();
+    }
+
+    for (int i = 0; i < processes.size(); i++)
+    {
+        for (int j = 0; j < processes.size() - 1; j++)
+        {
+            if (processes[j]->estimate(alpha) > processes[j+1]->estimate(alpha))
+            {
+                Process *temp = processes[j];
+                processes[j] = processes[j+1];
+                processes[j+1] = temp;
+            }
+        }
+    }
+
+    for (Process *p : processes)
+        q.push(p);
 }
 
 std::string ProcessQueue::to_string()

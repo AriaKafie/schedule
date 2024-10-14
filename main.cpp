@@ -10,12 +10,16 @@ void* start_scheduling(void *ptr)
 {
     SchedulerInfo *si = (SchedulerInfo *)ptr;
     
-    ProcessQueue ready_q, io_q;
+    ProcessQueue ready_q(si->alpha), io_q(si->alpha);
     std::ifstream burst_file(si->filename);
     std::string line;
     
     for (int pid = 0; std::getline(burst_file, line); pid++)
         ready_q.push(new Process(pid, line));
+
+    std::cout << ready_q.to_string() << std::endl;
+
+    ready_q.sort();
 
     std::cout << ready_q.to_string() << std::endl;
 

@@ -9,22 +9,16 @@
 void* start_scheduling(void *ptr)
 {
     SchedulerInfo *si = (SchedulerInfo *)ptr;
-
-    std::ifstream burst_file(si->filename);
-    float alpha = si->alpha;
     
-    std::vector<Process> processes;    
     ProcessQueue ready_q, io_q;
-
+    std::ifstream burst_file(si->filename);
     std::string line;
-    for (int pid = 0; std::getline(burst_file, line); pid++)
-        processes.emplace_back(pid, line);
-
-    for (int i = 0; i < processes.size(); i++)
-        ready_q.push(&processes[i]);
-
-    std::cout << ready_q.to_string();
     
+    for (int pid = 0; std::getline(burst_file, line); pid++)
+        ready_q.push(new Process(pid, line));
+
+    std::cout << ready_q.to_string() << std::endl;
+
     do
     {
     } while(false);
@@ -35,7 +29,7 @@ void* start_scheduling(void *ptr)
 
 int main(int argc, char** argv)
 {
-    float alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_ALPHA;
+    float alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_VALUE;
     char *path = optind < argc ? argv[optind] : argv[SECOND_ARG_INDEX];
 
     pthread_t worker;

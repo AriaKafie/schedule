@@ -3,18 +3,29 @@
 
 #include <sstream>
 
-Process::Process(int pid, const std::string& bursts_s) : id(pid), cpu_time(0), io_time(0)
+Process::Process(int pid, const std::string& _bursts) : id(pid), cpu_time(0), io_time(0)
 {
-    std::istringstream is(bursts_s);
+    std::istringstream is(_bursts);
     std::string token;
 
     while (is >> token)
         bursts.push_back(std::stoi(token));
 }
 
+float Process::estimate(float alpha)
+{
+    if (alpha < 0)
+        return bursts[0];
+}
+
 void ProcessQueue::push(Process *proc)
 {
     q.push(proc);
+}
+
+void ProcessQueue::sort()
+{
+    
 }
 
 std::string ProcessQueue::to_string()
@@ -27,8 +38,11 @@ std::string ProcessQueue::to_string()
         p = copy.front();
 
         ss << "P" << p->id << ": { ";
-        for (int i : p->bursts)
-            ss << i << " ";
+        for (int i = 0; i < p->bursts.size(); i++)
+        {
+            if (p->bursts[i] != NO_VALUE)
+                ss << p->bursts[i] << " ";
+        }
         ss << "}\n";
         
         copy.pop();

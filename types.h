@@ -6,7 +6,7 @@
 #include <queue>
 #include <vector>
 
-constexpr float NO_ALPHA         = -1;
+constexpr float NO_VALUE         = -1;
 constexpr int   SECOND_ARG_INDEX =  1;
 
 typedef struct {
@@ -21,11 +21,14 @@ public:
     Process() = default;
     Process(int pid, const std::string& bursts_s);
     
+    float estimate(float ALPHA);
+
     int id;
     int cpu_time;
     int io_time;
 
     std::vector<int> bursts;
+    std::vector<float> estimates;
 };
 
 class ProcessQueue
@@ -33,7 +36,7 @@ class ProcessQueue
 public:
     void     push(Process *proc);
     //Process* pop();
-    //void     sort();
+    void     sort();
 
     std::string to_string();
     

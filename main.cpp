@@ -12,19 +12,20 @@ void* start_scheduling(void *ptr)
     
     ProcessQueue ready_q(si->alpha), io_q(si->alpha);
     std::ifstream burst_file(si->filename);
-    std::string line;
     
-    for (int pid = 0; std::getline(burst_file, line); pid++)
-        ready_q.push(new Process(pid, line));
+    for (std::string line; std::getline(burst_file, line);)
+        ready_q.push(new Process(ready_q.size(), line));
 
     std::cout << ready_q.to_string() << std::endl;
-
+    
     ready_q.sort();
 
     std::cout << ready_q.to_string() << std::endl;
-
+    
     do
     {
+        
+        
     } while(false);
 
     si->running = false;

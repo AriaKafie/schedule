@@ -35,7 +35,8 @@ class ProcessQueue
 {
 public:
     ProcessQueue(float _alpha) : alpha(_alpha) {}
-    
+
+    int size() const { return q.size(); }
     void     push(Process *proc);
     //Process* pop();
     void     sort();

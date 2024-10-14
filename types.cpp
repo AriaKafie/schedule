@@ -16,6 +16,19 @@ float Process::estimate(float alpha)
 {
     if (alpha < 0)
         return bursts[0];
+    
+    else if (estimates.size() == 0)
+    {
+        float avg = 0;
+        
+        for (int i = 0, cpu = true; i < bursts.size(); i++, cpu = !cpu)
+            if (cpu)
+                avg += bursts[i];
+
+        avg /= (float)((bursts.size() - 1) / 2 + 1);
+
+        return avg;
+    }
 }
 
 void ProcessQueue::push(Process *proc)

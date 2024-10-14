@@ -3,6 +3,11 @@
 
 #include <sstream>
 
+void Process::run_cpu()
+{
+    bursts.erase(bursts.begin());
+}
+
 Process::Process(int pid, const std::string& _bursts) : id(pid), cpu_time(0), io_time(0)
 {
     std::istringstream is(_bursts);
@@ -34,6 +39,49 @@ float Process::estimate(float alpha)
 void ProcessQueue::push(Process *proc)
 {
     q.push(proc);
+}
+
+void ProcessQueue::run_io(int ms)
+{
+    std::vector<Process*> processes;
+
+    for (Process *p; !q.empty();)
+    {
+        p = q.front();
+        processes.push_back(p);
+        q.pop();
+    }
+
+    for (Process *p : processes)
+        p->bursts[0] -= ms;
+}
+
+void ProcessQueue::sort_io()
+{
+    std::vector<Process*> processes;
+
+    for (Process *p; !q.empty();)
+    {
+        p = q.front();
+        processes.push_back(p);
+        q.pop();
+    }
+
+    for (int i = 0; i < processes.size(); i++)
+    {
+        for (int j = 0; j < processes.size() - 1; j++)
+        {
+            if (processes[j]->next_burst > processes[j+1]->next_burst)
+            {
+                Process *temp = processes[j];
+                processes[j] = processes[j+1];
+                processes[j+1] = temp;
+            }
+        }
+    }
+
+    for (Process *p : processes)
+        q.push(p);
 }
 
 void ProcessQueue::sort()

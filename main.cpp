@@ -16,15 +16,19 @@ void* start_scheduling(void *ptr)
     for (std::string line; std::getline(burst_file, line);)
         ready_q.push(new Process(ready_q.size(), line));
 
-    std::cout << ready_q.to_string() << std::endl;
-    
     ready_q.sort();
 
-    std::cout << ready_q.to_string() << std::endl;
-    
     do
     {
-        
+        if (!ready_q.empty())
+        {
+            Process *cpu_front = ready_q.front();
+
+            int time_spent = cpu_front->next_burst();
+            cpu_front->run_cpu();
+
+            io_q.run_io(time_spent);
+        }
         
     } while(false);
 

@@ -18,10 +18,12 @@ typedef struct {
 class Process
 {
 public:
-    Process() = default;
-    Process(int pid, const std::string& bursts_s);
-    
+    Process(int pid, const std::string& _bursts);
+
+    bool done() const { return bursts.size() == 0; }
+    int next_burst() const { return bursts[0]; }
     float estimate(float ALPHA);
+    void run_cpu();
 
     int id;
     int cpu_time;
@@ -36,10 +38,13 @@ class ProcessQueue
 public:
     ProcessQueue(float _alpha) : alpha(_alpha) {}
 
+    Process* front() const { return q.front(); }
+    bool empty() const { return q.size() == 0; }
     int size() const { return q.size(); }
-    void     push(Process *proc);
+    void push(Process *proc);
     //Process* pop();
-    void     sort();
+    void sort();
+    void sort_io();
 
     float alpha;
     std::string to_string();

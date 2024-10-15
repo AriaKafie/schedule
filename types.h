@@ -31,6 +31,7 @@ public:
     int io_time;
     int turnaround_time;
 
+    std::string bursts_s;
     std::vector<float> predictions;
     std::vector<int> bursts;
 };

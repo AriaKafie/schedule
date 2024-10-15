@@ -12,7 +12,7 @@ void Process::run_cpu(float alpha)
     bursts.erase(bursts.begin());
 }
 
-Process::Process(int pid, const std::string& _bursts) : id(pid), cpu_time(0), io_time(0)
+Process::Process(int pid, const std::string& _bursts) : id(pid), bursts_s(_bursts), cpu_time(0), io_time(0)
 {
     std::istringstream is(_bursts);
     std::string token;

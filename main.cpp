@@ -95,10 +95,21 @@ void* start_scheduling(void *ptr)
                                p->turnaround_time - p->cpu_time - p->io_time);
 
     for (Process *p : finished_processes)
+    {
+        std::istringstream is(p->bursts_s);
+        std::string token;
+
+        for (int i = 0, io = false; is >> token; i++, io = !io)
+            if (io) p->predictions.insert(p->predictions.begin() + i, std::stof(token));
+        
         log_process_estimated_bursts(p->id,
                                      p->predictions.data(),
                                      p->predictions.size());
-
+    }
+    
+    for (Process *p : finished_processes)
+        std::cout << p->bursts_s << std::endl;
+    
     si->running = false;
     pthread_exit(0);
 }

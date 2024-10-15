@@ -8,14 +8,51 @@
 #include "log.h"
 #include "types.h"
 
+constexpr int NORMAL_EXIT = 0;
+constexpr int ERROR_EXIT = 1;
+
 void* start_scheduling(void *ptr)
 {
     SchedulerInfo *si = (SchedulerInfo *)ptr;
 
+    // error checking
+    std::ifstream input_file(si->filename);
+    std::string input;
+
+    while (std::getline(input_file, input))
+    {
+        std::istringstream is(input);
+        std::string token;
+        int count;
+        for (count = 0; is >> token; count++)
+        {
+            if (std::stof(token) <= 0.0f)
+            {
+                std::cout << "A burst number must be bigger than 0" << std::endl;
+                si->running = false;
+                pthread_exit(ERROR_EXIT);
+            }
+        }
+
+        if (count % 2 == 0)
+        {
+            std::cout << "There must be an odd number of bursts for each process" << std::endl;
+            si->running = false;
+            pthread_exit(ERROR_EXIT);            
+        }
+    }
+
     std::vector<Process*> finished_processes;
     int global_time = 0;
     ProcessQueue ready_q(si->alpha), io_q(si->alpha);
+    
     std::ifstream burst_file(si->filename);
+    if (!burst_file.is_open())
+    {
+        std::cout << "Unable to open <<" << si->filename << ">>" << std::endl;
+        si->running = false;
+        pthread_exit(0);
+    }
     
     for (std::string line; std::getline(burst_file, line);)
     {
@@ -121,12 +158,19 @@ void* start_scheduling(void *ptr)
     //     std::cout << p->bursts_s << std::endl;
     
     si->running = false;
-    pthread_exit(0);
+    pthread_exit(NORMAL_EXIT);
 }
 
 int main(int argc, char** argv)
 {
     float alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_VALUE;
+
+    if (getopt(argc, argv, "a:") == 'a' && (alpha <= 0.0f || alpha >= 1.0f))
+    {
+        std::cout << "Alpha for exponential averaging must be within (0.0, 1.0)" << std::endl;
+        return ERROR_EXIT;
+    }
+    
     char *path = optind < argc ? argv[optind] : argv[SECOND_ARG_INDEX];
 
     pthread_t worker;

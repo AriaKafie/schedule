@@ -18,7 +18,10 @@ void* start_scheduling(void *ptr)
     std::ifstream burst_file(si->filename);
     
     for (std::string line; std::getline(burst_file, line);)
+    {
         ready_q.push(new Process(ready_q.size(), line));
+        printf("P%d: %s\n", ready_q.size() - 1, line.c_str());
+    }
 
     ready_q.sort();
 

@@ -8,10 +8,6 @@
 #include "log.h"
 #include "types.h"
 
-// define some constants
-constexpr int NORMAL_EXIT = 0;
-constexpr int ERROR_EXIT = 1;
-
 void* start_scheduling(void *ptr)
 {
     // convert ptr to the appropriate object
@@ -27,9 +23,9 @@ void* start_scheduling(void *ptr)
         std::istringstream is(input);
         std::string token;
         int count;
-        for (count = 0; is >> token; count++)
+        for (count = VALUE_0; is >> token; count++)
         {
-            if (std::stof(token) <= 0.0f) // bursts must be positive
+            if (std::stof(token) <= FLOAT_0) // bursts must be positive
             {
                 std::cout << "A burst number must be bigger than 0" << std::endl;
                 si->running = false;
@@ -37,7 +33,7 @@ void* start_scheduling(void *ptr)
             }
         }
 
-        if (count % 2 == 0) // total bursts must be an odd number
+        if (count % VALUE_2 == VALUE_0) // total bursts must be an odd number
         {
             std::cout << "There must be an odd number of bursts for each process" << std::endl;
             si->running = false;
@@ -46,7 +42,7 @@ void* start_scheduling(void *ptr)
     }
 
     std::vector<Process*> finished_processes; // arraylist of finished processes
-    int global_time = 0; // track global time
+    int global_time = VALUE_0; // track global time
     ProcessQueue ready_q(si->alpha), io_q(si->alpha); // define both queues
     
     std::ifstream burst_file(si->filename); // open the burst file
@@ -55,14 +51,14 @@ void* start_scheduling(void *ptr)
         // burst file must exist otherwise raise an error
         std::cout << "Unable to open <<" << si->filename << ">>" << std::endl;
         si->running = false;
-        pthread_exit(0);
+        pthread_exit(ERROR_EXIT);
     }
 
     // parse each line of the file and push its data to each process
     for (std::string line; std::getline(burst_file, line);)
     {
         ready_q.push(new Process(ready_q.size(), line));
-        printf("P%d: %s\n", ready_q.size() - 1, line.c_str()); // print out a summary of the processes
+        printf("P%d: %s\n", ready_q.size() - VALUE_1, line.c_str()); // print out a summary of the processes
     }
 
     ready_q.sort(); // sort the ready queue initially
@@ -89,7 +85,7 @@ void* start_scheduling(void *ptr)
             {
                 // check for finished blocked processes
                 Process *front = io_q.front();
-                if (front->next_burst() <= 0)
+                if (front->next_burst() <= VALUE_0)
                 {
                     // pop them from the io queue and push them to the ready queue
                     front->bursts.erase(front->bursts.begin());
@@ -135,7 +131,7 @@ void* start_scheduling(void *ptr)
             {
                 // remove any finished io processes
                 Process *front = io_q.front();
-                if (front->next_burst() <= 0)
+                if (front->next_burst() <= VALUE_0)
                 {
                     front->bursts.erase(front->bursts.begin());
                     // push them to the ready queue
@@ -165,7 +161,7 @@ void* start_scheduling(void *ptr)
         std::istringstream is(p->bursts_s);
         std::string token;
 
-        for (int i = 0, io = false; is >> token; i++, io = !io)
+        for (int i = VALUE_0, io = false; is >> token; i++, io = !io)
             if (io)
                 p->predictions.insert(p->predictions.begin() + i, std::stof(token));
         
@@ -188,7 +184,7 @@ int main(int argc, char** argv)
     float alpha = option == 'a' ? std::stof(optarg) : NO_VALUE;
 
     // make sure alpha is valid
-    if (option == 'a' && (alpha <= 0.0f || alpha >= 1.0f))
+    if (option == 'a' && (alpha <= FLOAT_0 || alpha >= FLOAT_1))
     {
         std::cout << "Alpha for exponential averaging must be within (0.0, 1.0)" << std::endl;
         return ERROR_EXIT;

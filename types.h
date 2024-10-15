@@ -6,7 +6,16 @@
 #include <queue>
 #include <vector>
 
-// declare some constants
+// define some constants
+#define FLOAT_0 0.0f
+#define FLOAT_1 1.0f
+
+constexpr int VALUE_1 = 1;
+constexpr int VALUE_0 = 0;
+constexpr int VALUE_2 = 2;
+constexpr int NORMAL_EXIT = 0;
+constexpr int ERROR_EXIT = 1;
+
 constexpr float NO_VALUE         = -1;
 constexpr int   SECOND_ARG_INDEX =  1;
 
@@ -25,8 +34,8 @@ public:
     Process(int pid, const std::string& _bursts);
 
     // helpers
-    bool done() const { return bursts.size() == 0; }
-    int next_burst() const { return bursts[0]; }
+    bool done() const { return bursts.size() == VALUE_0; }
+    int next_burst() const { return bursts[VALUE_0]; }
     float estimate(float ALPHA);
     void run_cpu(float alpha);
 
@@ -52,7 +61,7 @@ public:
 
     // helper functions
     Process* front() const { return q.front(); }
-    bool empty() const { return q.size() == 0; }
+    bool empty() const { return q.size() == VALUE_0; }
     int size() const { return q.size(); }
     void push(Process *proc) { q.push(proc); }
     void pop() { q.pop(); }

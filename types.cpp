@@ -9,14 +9,14 @@ void Process::run_cpu(float alpha)
 {
     // store the prediction
     predictions.push_back(estimate(alpha));
-    last_burst = bursts[0];
-    cpu_time += bursts[0];
+    last_burst = bursts[VALUE_0];
+    cpu_time += bursts[VALUE_0];
     // remove the process
     bursts.erase(bursts.begin());
 }
 
 // Process constructor
-Process::Process(int pid, const std::string& _bursts) : id(pid), bursts_s(_bursts), cpu_time(0), io_time(0)
+Process::Process(int pid, const std::string& _bursts) : id(pid), bursts_s(_bursts), cpu_time(VALUE_0), io_time(VALUE_0)
 {
     // prepare burst data for parsing
     std::istringstream is(_bursts);
@@ -31,26 +31,26 @@ Process::Process(int pid, const std::string& _bursts) : id(pid), bursts_s(_burst
 float Process::estimate(float alpha)
 {
     // if theres no alpha, return the real burst time
-    if (alpha < 0)
-        return bursts[0];
+    if (alpha < VALUE_0)
+        return bursts[VALUE_0];
 
     // if n == 1, simply return the average
-    else if (predictions.size() == 0)
+    else if (predictions.size() == VALUE_0)
     {
-        float avg = 0;
+        float avg = VALUE_0;
         
-        for (int i = 0, cpu = true; i < bursts.size(); i++, cpu = !cpu)
+        for (int i = VALUE_0, cpu = true; i < bursts.size(); i++, cpu = !cpu)
             if (cpu)
                 avg += bursts[i];
 
-        avg /= (float)((bursts.size() - 1) / 2 + 1);
+        avg /= (float)((bursts.size() - VALUE_1) / VALUE_2 + VALUE_1);
 
         return avg;
     }
     // else, return a value derived from the exponential averaging formula
     else
     {
-        return alpha * (float)last_burst + (1.0f - alpha) * (float)predictions[predictions.size() - 1];
+        return alpha * (float)last_burst + (FLOAT_1 - alpha) * (float)predictions[predictions.size() - VALUE_1];
     }
 }
 
@@ -72,7 +72,7 @@ void ProcessQueue::run_io(int ms)
     for (Process *p : processes)
     {
         p->io_time += std::min(p->next_burst(), ms);
-        p->bursts[0] -= ms;
+        p->bursts[VALUE_0] -= ms;
     }
 
     // add procs back to the queue
@@ -95,15 +95,15 @@ void ProcessQueue::sort_io()
     }
 
     // stable sort the vector based on actual burst time
-    for (int i = 0; i < processes.size(); i++)
+    for (int i = VALUE_0; i < processes.size(); i++)
     {
-        for (int j = 0; j < processes.size() - 1; j++)
+        for (int j = VALUE_0; j < processes.size() - VALUE_1; j++)
         {
-            if (processes[j]->next_burst() > processes[j+1]->next_burst())
+            if (processes[j]->next_burst() > processes[j+VALUE_1]->next_burst())
             {
                 Process *temp = processes[j];
-                processes[j] = processes[j+1];
-                processes[j+1] = temp;
+                processes[j] = processes[j+VALUE_1];
+                processes[j+VALUE_1] = temp;
             }
         }
     }
@@ -129,13 +129,13 @@ void ProcessQueue::sort()
     // stable sort the vector based on estimates
     for (int i = 0; i < processes.size(); i++)
     {
-        for (int j = 0; j < processes.size() - 1; j++)
+        for (int j = 0; j < processes.size() - VALUE_1; j++)
         {
-            if (processes[j]->estimate(alpha) > processes[j+1]->estimate(alpha))
+            if (processes[j]->estimate(alpha) > processes[j+VALUE_1]->estimate(alpha))
             {
                 Process *temp = processes[j];
-                processes[j] = processes[j+1];
-                processes[j+1] = temp;
+                processes[j] = processes[j+VALUE_1];
+                processes[j+VALUE_1] = temp;
             }
         }
     }

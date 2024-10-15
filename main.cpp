@@ -163,9 +163,10 @@ void* start_scheduling(void *ptr)
 
 int main(int argc, char** argv)
 {
-    float alpha = getopt(argc, argv, "a:") == 'a' ? std::stod(optarg) : NO_VALUE;
+    char option = getopt(argc, argv, "a:");
+    float alpha = option == 'a' ? std::stof(optarg) : NO_VALUE;
 
-    if (getopt(argc, argv, "a:") == 'a' && (alpha <= 0.0f || alpha >= 1.0f))
+    if (option == 'a' && (alpha <= 0.0f || alpha >= 1.0f))
     {
         std::cout << "Alpha for exponential averaging must be within (0.0, 1.0)" << std::endl;
         return ERROR_EXIT;

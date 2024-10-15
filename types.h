@@ -23,14 +23,16 @@ public:
     bool done() const { return bursts.size() == 0; }
     int next_burst() const { return bursts[0]; }
     float estimate(float ALPHA);
-    void run_cpu();
+    void run_cpu(float alpha);
 
+    int last_burst;
     int id;
     int cpu_time;
     int io_time;
+    int turnaround_time;
 
+    std::vector<float> predictions;
     std::vector<int> bursts;
-    std::vector<float> estimates;
 };
 
 class ProcessQueue

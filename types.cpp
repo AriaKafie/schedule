@@ -4,8 +4,10 @@
 #include <algorithm>
 #include <sstream>
 
-void Process::run_cpu()
+void Process::run_cpu(float alpha)
 {
+    predictions.push_back(estimate(alpha));
+    last_burst = bursts[0];
     cpu_time += bursts[0];
     bursts.erase(bursts.begin());
 }
@@ -24,7 +26,7 @@ float Process::estimate(float alpha)
     if (alpha < 0)
         return bursts[0];
     
-    else if (estimates.size() == 0)
+    else if (predictions.size() == 0)
     {
         float avg = 0;
         
@@ -35,6 +37,10 @@ float Process::estimate(float alpha)
         avg /= (float)((bursts.size() - 1) / 2 + 1);
 
         return avg;
+    }
+    else
+    {
+        return alpha * (float)last_burst + (1.0f - alpha) * (float)predictions[predictions.size() - 1];
     }
 }
 
@@ -125,10 +131,9 @@ std::string ProcessQueue::to_string()
         p = copy.front();
 
         ss << "P" << p->id << ": { ";
-        for (int i = 0; i < p->bursts.size(); i++)
+        for (int i : p->bursts)
         {
-            if (p->bursts[i] != NO_VALUE)
-                ss << p->bursts[i] << " ";
+            ss << i << " ";
         }
         ss << "}\n";
         

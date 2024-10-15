@@ -6,41 +6,51 @@
 #include <queue>
 #include <vector>
 
+// declare some constants
 constexpr float NO_VALUE         = -1;
 constexpr int   SECOND_ARG_INDEX =  1;
 
+// define an info object to be passed to a thread
 typedef struct {
     char *filename;
     float alpha;
     bool running;
 } SchedulerInfo;
 
+// process class will fill up the queues
 class Process
 {
 public:
+    // constructor
     Process(int pid, const std::string& _bursts);
 
+    // helpers
     bool done() const { return bursts.size() == 0; }
     int next_burst() const { return bursts[0]; }
     float estimate(float ALPHA);
     void run_cpu(float alpha);
 
+    // member data
     int last_burst;
     int id;
     int cpu_time;
     int io_time;
     int turnaround_time;
 
+    // member data structures
     std::string bursts_s;
     std::vector<float> predictions;
     std::vector<int> bursts;
 };
 
+// ProcessQueue, a wrapper for std::queue<Process*>
 class ProcessQueue
 {
 public:
+    // constructor
     ProcessQueue(float _alpha) : alpha(_alpha) {}
 
+    // helper functions
     Process* front() const { return q.front(); }
     bool empty() const { return q.size() == 0; }
     int size() const { return q.size(); }
@@ -50,8 +60,10 @@ public:
     void run_io(int ms);
     void sort_io();
 
+    // data member
     float alpha;
-    
+
+    // member data structures
     std::string to_string();
     std::queue<Process*> q;
 };

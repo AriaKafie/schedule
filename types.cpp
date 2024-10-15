@@ -1,6 +1,7 @@
 
 #include "types.h"
 
+#include <algorithm>
 #include <sstream>
 
 void Process::run_cpu()
@@ -50,9 +51,12 @@ void ProcessQueue::run_io(int ms)
 
     for (Process *p : processes)
     {
-        p->io_time += std::max(p->next_burst(), ms);
+        p->io_time += std::min(p->next_burst(), ms);
         p->bursts[0] -= ms;
     }
+
+    for (Process *p : processes)
+        q.push(p);
 }
 
 void ProcessQueue::sort_io()

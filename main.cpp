@@ -9,7 +9,8 @@
 void* start_scheduling(void *ptr)
 {
     SchedulerInfo *si = (SchedulerInfo *)ptr;
-    
+
+    int global_time = 0;
     ProcessQueue ready_q(si->alpha), io_q(si->alpha);
     std::ifstream burst_file(si->filename);
     
@@ -18,8 +19,6 @@ void* start_scheduling(void *ptr)
 
     ready_q.sort();
 
-    std::cout << ready_q.to_string() << io_q.to_string() << std::endl;
-    
     do
     {
         if (!ready_q.empty())
@@ -27,6 +26,7 @@ void* start_scheduling(void *ptr)
             Process *cpu_front = ready_q.front();
 
             int time_spent = cpu_front->next_burst();
+            global_time += time_spent;
             cpu_front->run_cpu();
 
             io_q.run_io(time_spent);
@@ -43,16 +43,38 @@ void* start_scheduling(void *ptr)
                 else break;
             }
 
+            ready_q.pop();
+            
             if (!cpu_front->done())
-            {
-                ready_q.pop();
                 io_q.push(cpu_front);
+
+            printf("P%d: cpu executed = %d, io executed = %d, time elapsed = %d, %s\n",
+                   cpu_front->id, cpu_front->cpu_time, cpu_front->io_time, global_time, cpu_front->done() ? "completed" : "enter io");
+        }
+        else
+        {
+            int time_spent = io_q.front()->next_burst();
+            global_time += time_spent;
+
+            io_q.run_io(time_spent);
+
+            while (!io_q.empty())
+            {
+                Process *front = io_q.front();
+                if (front->next_burst() <= 0)
+                {
+                    front->bursts.erase(front->bursts.begin());
+                    ready_q.push(front);
+                    io_q.pop();
+                }
+                else break;
             }
         }
-        
-    } while(false);
 
-    std::cout << ready_q.to_string() << io_q.to_string() << std::endl;
+        ready_q.sort();
+        io_q.sort_io();
+        
+    } while(!ready_q.empty() || !io_q.empty());
 
     si->running = false;
     pthread_exit(0);

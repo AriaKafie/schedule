@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <pthread.h>
+#include <sstream>
 #include <unistd.h>
 
 #include "log.h"
@@ -100,15 +101,21 @@ void* start_scheduling(void *ptr)
         std::string token;
 
         for (int i = 0, io = false; is >> token; i++, io = !io)
-            if (io) p->predictions.insert(p->predictions.begin() + i, std::stof(token));
+        {
+            if (io)
+            {
+                p->predictions.insert(p->predictions.begin() + i, std::stof(token));
+                //i++;
+            }
+        }
         
         log_process_estimated_bursts(p->id,
                                      p->predictions.data(),
                                      p->predictions.size());
     }
     
-    for (Process *p : finished_processes)
-        std::cout << p->bursts_s << std::endl;
+    // for (Process *p : finished_processes)
+    //     std::cout << p->bursts_s << std::endl;
     
     si->running = false;
     pthread_exit(0);
